@@ -10,6 +10,7 @@ output: html_notebook
 #load libraries 
 library(dplyr)
 library(tidyverse)
+library(ggplot2)
 
 #load in the data here 
 # we will only be using the "street-addresses.csv" file from the text
@@ -57,7 +58,7 @@ Matches
 
 ```
 
-My answer here...... 
+My answer here...... 40
 
 
 ## Back to the Streets: Your Turn
@@ -76,31 +77,65 @@ LeftOvers <-
 
 My answer here.......
 
-pattern <- "(ST|RD|ROAD)": This line stores "(ST|RD|ROAD)" in the variable pattern, but this will later be used to match and filter out the street endings with "ST", "RD", "ROAD".
+- pattern <- "(ST|RD|ROAD)": This line stores "(ST|RD|ROAD)" in the variable 'pattern', but this will later be used to match and filter out the street endings with "ST", "RD", "ROAD".
 
-LeftOvers <-: It is a variable called "LeftOvers" in which the code below this is stored.
+- LeftOvers <-: It is a variable called "LeftOvers" in which the code below this is stored.
 
-Addresses %>% : This initiates the "Addresses" data set and passes the output to the filter function in the next line using the pipe operator
+- Addresses %>% : This initiates the "Addresses" data set and passes the output to the filter function in the next line using the pipe operator
 
-filter( !grepl(pattern, address),: Filters out the address that matches the data stores in the pattern variable or simply it filter out the street endings with "ST", "RD", "ROAD".
+- filter( !grepl(pattern, address),: Filters out and removes the address that matches the data stored in the pattern variable or simply it filter out and removes the street endings with "ST", "RD", "ROAD".
 
-!grepl("\\sAPT|UNIT\\s[\\d]+$", address),: This filters out the addresses ending with "APT" or "UNIT" and followed by digits
+- !grepl("\\sAPT|UNIT\\s[\\d]+$", address),: This filters out and removes the addresses ending with "APT" or "UNIT" and followed by digits
 
-!grepl(" BOX ", address): Filters out address that contain this- " BOX ".
+- !grepl(" BOX ", address): Filters out and removes address that contain this- " BOX ".
 
 #### Part 2: Implement your method on the entire `Addresses` data set. Explain how your code works line by line.
 
 ```{r}
-
+pattern <- "(RD|LANE|AVE|DR|CT)"
+AddressTypes <- 
+  Addresses %>% 
+  filter(grepl(pattern, address),
+         !grepl("PO", address),
+         !grepl("NCS", address)) %>%
+  mutate(Includes = str_extract(address, pattern)) %>%
+  group_by(Includes) %>%
+  summarise(count = n())
+  
+  
 
 
 ```
 
 My answer here.......
 
+- pattern <- "(RD|LANE|AVE|DR|CT)": This line stores "(RD|LANE|AVE|DR|CT)" in the variable 'pattern', but this will later be used to match and filter out the street endings with "RD", "LANE", "AVE", "DR", "CT".
+
+- AddressTypes <-: It is a variable called "AddressTypes" in which the code below this is stored.
+
+- Addresses %>% : This initiates the "Addresses" data set and passes the output to the filter function in the next line as an input using the pipe operator
+
+- filter(grepl(pattern, address),: Filters and stores the address that matches the data stored in the pattern variable or simply it filter and stores the street endings with "RD", "LANE", "AVE", "DR", "CT".
+
+- !grepl("PO", address),: Filters out and removes address that contain this- "PO".
+
+- !grepl("NCS", address)) %>%: Filters out and removes address that contain this- "PO". Moreover, the pipe operator passes this output (from the whole filter function) as an input to the mutate function in the next line.
+
+- mutate(Includes = str_extract(address, pattern)) %>%: Creates a new column named 'Includes' by extracting the first complete matching street ending pattern form each of the stored address. Moreover, the pipe operator passes this output (from the mutate function) as an input to the group_by function in the next line.
+
+- group_by(Includes) %>%: Groups the data according to the 'Includes' column. The pipe operator passes this output (from the group_by function) as an input to the summarise function in the next line.
+
+- summarise(count = n()): Summarises the data by counting the number of occurences of each of the type in 'Includes' variable.
+
+
 #### Additional Question 1: Present your result from part 2 by providing a table in descending order of popularity for the street name endings you found
 
 ```{r}
+Address_type_table <- 
+  AddressTypes %>%
+  arrange(desc(count))
+
+Address_type_table
 
 
 ```
@@ -110,9 +145,13 @@ My answer here.......
 Note: make sure your order street names according to popularity, not alphabetically.
 
 ```{r}
-
+Address_type_table %>%
+  ggplot(aes(x = reorder(Includes, count), y = count)) +
+  geom_bar(stat = "identity") +
+  labs(x = "Street name", y = "Count")
 ```
 
 #### Additional Question 3: Comment on any patterns you see
 
 My answer here.......
+Based on the following graph we can observe that streets like "DR" and "RD" are more common than streets like "LANE" and "CT". Meaning that street types like "DR" and "RD" are the most common in the aread from which this 'street addresses' data set was collected.
