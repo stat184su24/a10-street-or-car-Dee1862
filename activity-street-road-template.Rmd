@@ -1,6 +1,6 @@
 ---
 title: "Activity: Street or Road?"
-author: "YOUR NAME HERE"
+author: "DEEKSHITH REDDY BHOOMIREDDY"
 output: html_notebook
 ---
 
@@ -8,10 +8,14 @@ output: html_notebook
 
 ```{r}
 #load libraries 
+library(dplyr)
+library(tidyverse)
 
 #load in the data here 
 # we will only be using the "street-addresses.csv" file from the text
-
+download.file(url = "https://mdbeckman.github.io/dcSupplement/data/CMS_ProvidersSimple.rds",
+              destfile = "Your-Name-For-The-File.rds")
+DataTable <- readRDS("Your-Name-For-The-File.rds")
 
 
 ```
@@ -19,21 +23,37 @@ output: html_notebook
 ## Recreate Solved Example using `sample(50)`
 
 ```{r}
-
+Addresses <- read_csv("https://mdbeckman.github.io/dcSupplement/data/street-addresses.csv")
+Sample <- 
+  Addresses %>%
+  sample_n(size = 50)
 
 ```
 
 ## Recreate Soved Example using the entire `Address` data set
 
 ```{r}
+pattern <- "BOX\\s+(\\d+)"
 
+Matches <- 
+  Sample %>% 
+  filter(grepl(pattern, address))
+
+Don <-
+  Sample %>%
+  filter( !grepl(pattern, address))
 
 ```
 
 #### Additional Question: How many addresses are a PO BOX (including NCSU BOX)? 
 
 ```{r}
+Matches <- 
+  Sample %>% 
+  filter(grepl(pattern = "PO BOX|NCSU BOX", address)) %>% 
+  nrow()
 
+Matches
 
 ```
 
@@ -55,6 +75,18 @@ LeftOvers <-
 ```
 
 My answer here.......
+
+pattern <- "(ST|RD|ROAD)": This line stores "(ST|RD|ROAD)" in the variable pattern, but this will later be used to match and filter out the street endings with "ST", "RD", "ROAD".
+
+LeftOvers <-: It is a variable called "LeftOvers" in which the code below this is stored.
+
+Addresses %>% : This initiates the "Addresses" data set and passes the output to the filter function in the next line using the pipe operator
+
+filter( !grepl(pattern, address),: Filters out the address that matches the data stores in the pattern variable or simply it filter out the street endings with "ST", "RD", "ROAD".
+
+!grepl("\\sAPT|UNIT\\s[\\d]+$", address),: This filters out the addresses ending with "APT" or "UNIT" and followed by digits
+
+!grepl(" BOX ", address): Filters out address that contain this- " BOX ".
 
 #### Part 2: Implement your method on the entire `Addresses` data set. Explain how your code works line by line.
 
