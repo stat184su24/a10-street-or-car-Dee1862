@@ -37,11 +37,11 @@ Sample <-
 pattern <- "BOX\\s+(\\d+)"
 
 Matches <- 
-  Sample %>% 
+  Addresses %>% 
   filter(grepl(pattern, address))
 
 Don <-
-  Sample %>%
+  Addresses %>%
   filter( !grepl(pattern, address))
 
 ```
@@ -50,7 +50,7 @@ Don <-
 
 ```{r}
 Matches <- 
-  Sample %>% 
+  Addresses %>% 
   filter(grepl(pattern = "PO BOX|NCSU BOX", address)) %>% 
   nrow()
 
@@ -58,7 +58,8 @@ Matches
 
 ```
 
-My answer here...... 40
+My answer here...... 
+10552 addresses are a PO BOX (including NCSU BOX)
 
 
 ## Back to the Streets: Your Turn
@@ -146,7 +147,7 @@ Note: make sure your order street names according to popularity, not alphabetica
 
 ```{r}
 Address_type_table %>%
-  ggplot(aes(x = reorder(Includes, count), y = count)) +
+  ggplot(aes(x = reorder(Includes, count, decreasing = TRUE), y = count)) +
   geom_bar(stat = "identity") +
   labs(x = "Street name", y = "Count")
 ```
@@ -154,4 +155,4 @@ Address_type_table %>%
 #### Additional Question 3: Comment on any patterns you see
 
 My answer here.......
-Based on the following graph we can observe that streets like "DR" and "RD" are more common than streets like "LANE" and "CT". Meaning that street types like "DR" and "RD" are the most common in the aread from which this 'street addresses' data set was collected.
+Based on the following graph we can observe that streets like "DR" and "RD" are more common than streets like "LANE" and "CT". Meaning that street types like "DR" and "RD" are the most common in the area from which this 'street addresses' data set was collected.
